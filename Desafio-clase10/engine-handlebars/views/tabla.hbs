@@ -1,0 +1,19 @@
+<h1>Productos cargados</h1>
+<table class="table container-sm">
+        <thead>
+            <tr>
+                <th scope="col" >Nombre</th>
+                <th scope="col" >Precio</th>
+                <th scope="col" >Imagen</th>
+            </tr>
+        </thead>
+        {{#each productos}}
+            <tr>
+                <th>{{this.title}}</th>
+                <th>{{this.price}}</th>
+                <th><img src={{this.thumbnail}} alt="" width="40"></th>
+            </tr>            
+        {{/each}}
+</table>
+<br>
+<a href="/"><button>Cargar productos</button></a>

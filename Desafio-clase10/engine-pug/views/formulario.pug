@@ -1,0 +1,14 @@
+extend layout.pug
+
+block content
+    h1= "Ingrese productos"
+    form(action="/productos" method="POST" class="col align-self-center container")
+        label(for="title") Titulo
+        input(name="title" text="text")
+        label(for="price") Precio
+        input(name="price" text="text")
+        label(for="thumbnail") Imagen
+        input(name="thumbnail" text="text")
+        input(type="submit" value="enviar")
+    br
+    a(class="btn btn-primary" href="/productos") Ver productos

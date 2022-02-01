@@ -1,0 +1,21 @@
+<% if (productos.length > 0) { %>
+    <table class="table container-sm">
+        <thead>
+            <tr>
+                <th scope="col" >Nombre</th>
+                <th scope="col" >Precio</th>
+                <th scope="col" >Imagen</th>
+            </tr>
+        </thead>
+        <% productos.map(e => { %>
+            <tr>
+                <th><%= e.title %></th>
+                <th><%= e.price %></th>
+                <th><img src=<%= e.thumbnail %> alt="" width="40"></th>
+            </tr>
+        <% }) %>                
+    </table>
+<% }else{ %>
+    <h1> No hay productos</h1>
+<% } %>
+    

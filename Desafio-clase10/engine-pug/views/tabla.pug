@@ -1,0 +1,21 @@
+extend layout.pug
+
+block content
+    h1= "Productos cargados"
+    table.table.container-sm 
+        thead 
+            tr 
+                th.col Nombre
+                th.col Precio 
+                th.col Imagen
+        if productos.length > 0
+            each item in productos
+                tr
+                    th.col= item.title
+                    th.col= item.price
+                    th.col
+                        img(src= item.thumbnail width="40")
+        else
+            h1 No hay productos
+    a(class="btn btn-primary" href="/") cargar productos
+    
