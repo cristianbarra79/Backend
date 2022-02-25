@@ -14,8 +14,6 @@ boton.style.display = "none";
 var d = new Date();
 
 socket.on("productos", (data) => {
-
-    console.log(data);
     fetch("./plantilla.txt")
     .then(response => response.text())
     .then(datos => {
@@ -32,8 +30,6 @@ socket.on("productos", (data) => {
 });
 
 socket.on("mensajes", (data) => {
-    console.log(data);
-
     const todo = data
       .map(
         (e) =>

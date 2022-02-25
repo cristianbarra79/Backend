@@ -6,35 +6,37 @@ const app = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
-const {options} = require("./options/mariaDB")
-const knex= require("knex")(options)
+const {options: mariaDB} = require("./options/mariaDB")
+const {options: sqlite3} = require("./options/sqlite3")
+const knex = require("knex")
 
 class conexion{
-    constructor(tabla){        
-        this.tabla = tabla
+    constructor(tabla, config){
+        this.tabla = tabla,
+        this.config = config
     }
 
     pedirDatos(){
-        return  knex.select().table(this.tabla).then()        
+        return  knex(this.config).select().table(this.tabla).then()        
     }
 
     guardarProducto(data){        
-        knex('productos')
+        knex(this.config)('productos')
             .insert({ title: data.title, price:data.price, thumbnail:data.thumbnail})
             .then(console.log("productos agregado"))
-        return knex.select().table(this.tabla).then()
+        return knex(this.config).select().table(this.tabla).then()
     }
 
     guardarChat(data){
-        knex("chat")
+        knex(this.config)("chat")
             .insert({email: data.email, fyh : data.fyh, mensaje: data.mensaje})
             .then(console.log("mensaje agregado"))
-        return knex.select().table(this.tabla).then()
+        return knex(this.config).select().table(this.tabla).then()
     }
 }
 
-const productos = new conexion("productos")
-const chat = new conexion("chat")
+const productos = new conexion("productos", mariaDB)
+const chat = new conexion("chat", sqlite3)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
