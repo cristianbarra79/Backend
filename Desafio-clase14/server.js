@@ -75,7 +75,7 @@ async function modificar(req,res,next) {
 
 async function deleteById(req,res,next){
 
-    const contenido = req.datos      
+    const contenido = req.datos
     const indice = contenido.findIndex(x => x.id == req.params.id)
     if (indice >= 0) {
         contenido.splice(indice,1)
@@ -174,12 +174,11 @@ async function añadirAlCarrito(req,res,next){
 
 async function eliminarProducto(req,res,next){
     const carrito = req.carrito
-    const indice = carrito.findIndex(x => x.id == req.params.id)
-    
-    if (!indice) {
-        const productosEnCarrito = carrito[indice].productos
+    const indice = carrito.findIndex(x => x.id == req.params.id)    
+    if (indice >= 0) {
+        const productosEnCarrito = carrito[indice].productos        
         const indiceProd = productosEnCarrito.findIndex(x => x.id == req.params.id_prod)
-        if  (indiceProd >= 0){
+        if  (indiceProd >= 0){            
             carrito[indice].productos.splice(indiceProd,1)
             try {
                 await fs.promises.writeFile(`./carrito.txt`, JSON.stringify(carrito))
@@ -235,9 +234,6 @@ routerCarrito.delete('/:id/productos/:id_prod',leerCarrito, eliminarProducto, (r
 
 
 
-
-
-
 routerProductos.get('/', pedirArchivos, (req, res) => {
     res.send(req.datos)    
 })
@@ -258,8 +254,9 @@ routerProductos.delete('/:id', login, pedirArchivos, deleteById,(req,res) =>{
     res.send("Articulo eliminado")
 })
 
-app.use('/', express.static('public'));
 
+
+app.use('/', express.static('public'));
 
 app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarrito)
