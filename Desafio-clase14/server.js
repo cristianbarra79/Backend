@@ -3,8 +3,9 @@ const fs = require('fs')
 const { Router } = express
 
 const app = express()
-const router = Router()
-const PORT = process.env.PORT || 8080;
+const routerCarrito = Router()
+const routerProductos = Router()
+const PORT = 8080 || process.env.PORT;
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -37,7 +38,11 @@ async function agregar(req,res,next){
         const contenido = req.datos        
         const time = new Date()        
         let indice = contenido.length > 0 ? contenido[contenido.length-1].id+1 : 1
-        let object = req.body
+        let object = req.body        
+        if( !object.title || !object.price || !object.description || !object.image || !object.count || !object.codigo){
+            res.send({"message" : "faltan datos"})
+            return;
+        }
         object = {...object, id : indice, timestamp : time}
         req.agregado = object
         contenido.push(object)
@@ -90,9 +95,10 @@ async function leerCarrito(req,res,next) {
         const contenido = await fs.promises.readFile(`./carrito.txt`, "utf-8")
         const datos = JSON.parse(contenido)
         req.carrito = datos
+
         next()
     }catch(err){
-        console.log(err);
+        console.log(`error al leer ${carrito}`);
     }
 }
 
@@ -133,7 +139,7 @@ async function filtrarCarrito(req,res,next) {
     const datos = req.carrito    
     const carrito = datos.find(prod => prod.id == req.params.id)
     if (!carrito) {
-        req.carritoFiltrado = { error : 'carrito no encontrado' }
+        req.carritoFiltrado = { "error" : `carrito no encontrado` }
     }else
         req.carritoFiltrado = carrito
     next()
@@ -141,10 +147,19 @@ async function filtrarCarrito(req,res,next) {
 
 async function añadirAlCarrito(req,res,next){    
     const datos = req.carrito
-    const productos = req.datos    
+    const productos = req.datos
+    if (!req.body.id) {
+        res.send({"message":"Ingrese el id del producto"})
+        return
+    }
     const indice = datos.findIndex(x => x.id == req.params.id)
     if (indice >= 0){
         const producto = productos.find(e => e.id == req.body.id)
+        if (!producto) {
+            res.send({"message":"productos no existen"})
+            return
+        }
+        
         datos[indice].productos.push(producto)
         try {
             await fs.promises.writeFile(`./carrito.txt`, JSON.stringify(datos))
@@ -161,7 +176,7 @@ async function eliminarProducto(req,res,next){
     const carrito = req.carrito
     const indice = carrito.findIndex(x => x.id == req.params.id)
     
-    if (indice >= 0) {
+    if (!indice) {
         const productosEnCarrito = carrito[indice].productos
         const indiceProd = productosEnCarrito.findIndex(x => x.id == req.params.id_prod)
         if  (indiceProd >= 0){
@@ -171,18 +186,29 @@ async function eliminarProducto(req,res,next){
             } catch (err) {
                 console.log("error al escribir" + err);
             }
-        }else res.end("No se encuentra producto")
+        }else{
+         res.send({"mensaje":"No se encuentra producto"})
+         return
+        }
 
-    }else
-     res.end("No se encuentra carrito")
+            
+
+    }else{
+        res.send({"mensaje":"No se encuentra carrito"})
+        return
+    }
     next()
 }
 
 const login = (req,res,next) => { 
-    acceso ? next() : res.end("sin acceso")
+    acceso ? next() : 
+    res.send({ "error" : -1, "descripcion": "ruta o método no autorizado" }) 
+    
 }
 
-router.post("/carrito", leerCarrito, crearCarrito, (req, res) =>{
+
+
+routerCarrito.post("/", leerCarrito, crearCarrito, (req, res) =>{
     const respuesta = {
         id : req.id
     }
@@ -190,45 +216,53 @@ router.post("/carrito", leerCarrito, crearCarrito, (req, res) =>{
     //res.end(` El id es:${req.id}`)
 })
 
-router.delete("/carrito/:id", leerCarrito, borrarCarrito, (req,res)=>{
+routerCarrito.delete("/:id", leerCarrito, borrarCarrito, (req,res)=>{
     res.send("Carrito eliminado")
 })
 
-router.get("/carrito/:id/productos", leerCarrito, filtrarCarrito, (req,res)=>{
+routerCarrito.get("/:id/productos", leerCarrito, filtrarCarrito, (req,res)=>{
     res.send(req.carritoFiltrado.productos)
 })
 
-router.post("/carrito/:id/productos", pedirArchivos, leerCarrito, añadirAlCarrito, (req,res)=>{
+routerCarrito.post("/:id/productos", pedirArchivos, leerCarrito, añadirAlCarrito, (req,res)=>{
     res.send("producto añadido")
 })
 
-router.delete('/carrito/:id/productos/:id_prod',leerCarrito, eliminarProducto, (req, res) =>{
-    res.send("producto eliminado con exito")
+routerCarrito.delete('/:id/productos/:id_prod',leerCarrito, eliminarProducto, (req, res) =>{
+    res.send({"mensaje":"producto eliminado con exito"})
 })
 
-router.get('/productos', pedirArchivos, (req, res) => {
+
+
+
+
+
+
+routerProductos.get('/', pedirArchivos, (req, res) => {
     res.send(req.datos)    
 })
 
-router.get('/productos/:id', pedirArchivos, filtrar, (req, res) => {
+routerProductos.get('/:id', pedirArchivos, filtrar, (req, res) => {
     res.send(req.filtrado)    
 })
 
-router.post('/productos', login, pedirArchivos, agregar,(req, res) => {
+routerProductos.post('/', login, pedirArchivos, agregar,(req, res) => {
     res.send(req.agregado)
 })
 
-router.put('/productos/:id', login, pedirArchivos, modificar, (req, res) => {
+routerProductos.put('/:id', login, pedirArchivos, modificar, (req, res) => {
     res.send("Articulo actualizado")    
 })
 
-router.delete('/productos/:id', login, pedirArchivos, deleteById,(req,res) =>{
+routerProductos.delete('/:id', login, pedirArchivos, deleteById,(req,res) =>{
     res.send("Articulo eliminado")
 })
 
 app.use('/', express.static('public'));
 
-app.use('/api', router)
+
+app.use('/api/productos', routerProductos)
+app.use('/api/carrito', routerCarrito)
 
 const server = app.listen(PORT, () => {
     console.log(`Servidor http escuchando en el puerto ${server.address().port}`)
