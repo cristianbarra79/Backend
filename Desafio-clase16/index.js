@@ -16,7 +16,7 @@ class conexion{
         this.config = config
     }
 
-    pedirDatos(){
+    pedirDatos(){//todo
         return  knex(this.config).select().table(this.tabla).then()        
     }
 
