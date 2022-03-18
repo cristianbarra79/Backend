@@ -19,5 +19,4 @@ const firestore = admin.firestore()
 
 
 
-module.exports =  mongoDatos
-
+module.exports = { mongoDatos, firestore}

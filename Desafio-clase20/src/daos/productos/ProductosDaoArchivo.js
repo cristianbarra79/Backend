@@ -1,5 +1,5 @@
 const fs = require('fs')
-ContenedorArchivo = require("../../contenedores/ContenedorArchivo");
+ContenedorArchivo = require("../../contenedores/ContenedorArchivo.js");
 
 
 class ProductosDaoArchivo extends ContenedorArchivo{

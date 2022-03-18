@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const mongoDatos = require("../config.js")
+const {mongoDatos} = require("../config.js")
 
 
 
@@ -9,8 +9,7 @@ class ContenedorMongoDb{
     }
 
     async listarAll(){        
-        try {
-            //return "hola"
+        try {            
             await mongoose.connect(mongoDatos.URL, mongoDatos.option)            
             return await this.modelo.find()            
         } catch (error) {
@@ -41,6 +40,11 @@ class ContenedorMongoDb{
             await mongoose.connect(mongoDatos.URL, mongoDatos.option)
 
             let cantidad = await this.modelo.findOne({}, { "id": 1, "_id": 0}, { sort: { _id: -1 } })            
+            if(!cantidad){                
+                cantidad = {
+                    id: 0
+                }
+            }
             const nuevoProd = new this.modelo({
                 id: cantidad.id +1,
                 title: datos.title,

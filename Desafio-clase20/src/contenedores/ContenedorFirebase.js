@@ -1,9 +1,8 @@
-var admin = require("firebase-admin");
-const firestore = require("../config")
+const {firestore} = require("../config")
 
 class ContenedorFirebase{
     constructor(base){        
-        this.base = admin.firestore().collection(base)
+        this.base = firestore.collection(base)
     }
 
     async listarAll(){

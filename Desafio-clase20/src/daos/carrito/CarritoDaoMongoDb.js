@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const mongoDatos = require("../../config")
+const {mongoDatos} = require("../../config")
 ContenedorMongoDb = require("../../contenedores/ContenedorMongoDb");
 
 
@@ -29,6 +29,7 @@ class CarritoDaoMongoDb extends ContenedorMongoDb{
         return doc.id
         
     }
+    
     async filtrarCarrito(id){
         
         await mongoose.connect(mongoDatos.URL, mongoDatos.option)

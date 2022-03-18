@@ -75,7 +75,6 @@ class CarritoDaoFirebase extends ContenedorFirebase{
         }
     }
 
-
     async eliminarProducto(id, idProd){
         try {
             const carrito = await this.filtrarCarrito(id)            
