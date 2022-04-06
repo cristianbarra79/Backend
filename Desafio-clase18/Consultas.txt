@@ -1,0 +1,74 @@
+1- Crear colleccion "productos" y añadir documentos:
+db.productos.insert(
+    [
+        {_id:1, title:"Escuadra",price:120,thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png"}, 
+        {_id:2,title:"Calculadora", price:580, thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/calculator-math-tool-school-256.png"},
+        {_id:3, title:"Globo Terráqueo",price:900,thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png"}, 
+        {_id:4,title:"Pizarron", price:1280, thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png"},
+        {_id:5, title:"Tiza",price:1700,thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png"}, 
+        {_id:6,title:"Borrador", price:2300, thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png"},
+        {_id:7, title:"Mesa",price:2860,thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png"}, 
+        {_id:8,title:"Silla", price:3350, thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png"},
+        {_id:9, title:"Compas",price:4320,thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png"}, 
+        {_id:10,title:"Libro", price:4990, thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png"}
+    ]
+)
+
+Crear colleccion "mensajes" y añadir documentos:
+db.mensajes.insert(
+    [
+        {_id:1, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"hola"},
+        {_id:2, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"hola"},
+        {_id:3, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"hola"},
+        {_id:4, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"hola"},
+        {_id:5, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"hola"},
+        {_id:6, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"hola"},
+        {_id:7, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"hola"},
+        {_id:8, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"hola"},
+        {_id:9, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"hola"},
+        {_id:10, email:"example@example.com", fyh:"3/3/22 - 16:26", mensaje:"chau"}
+    ]
+)
+
+3- Listar documentos:
+db.productos.find()
+db.mensajes.find()
+
+4- Mostrar cantidad de documentos:
+db.productos.estimatedDocumentCount()
+db.mensajes.estimatedDocumentCount()
+
+5- CRUD:
+a-agregar un documentos a productos
+db.productos.insert({_id:11, title:"Lapiz",price:5500,thumbnail:"https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png"})
+
+b- Consultas:
+Productos menores a 1000:
+db.productos.find({"price":{$lt:1000}})
+
+1000<=X>=3000:
+db.productos.find(
+    {$and:
+        [
+            {"price":{$gte:1000}},
+            {"price":{$lte:3000}}
+        ]})
+
+Mayor a 3000:
+db.productos.find({"price":{$gt:3000}})
+
+Tercer mas barato:
+db.productos.find({},{"title":1,"_id":0}).sort({"price":1}).skip(2).limit(1)
+
+c- Incluir stock en todos los productos:
+db.productos.updateMany({},{$set:{"stock":100}},{upsert:true})
+
+d- Stock a cero en productos > 4000:
+db.productos.updateMany({"price":{$gt:4000}},{$set:{"stock":0}})
+
+e- Borrar productos menores a 1000:
+db.productos.deleteMany({"price":{$lt:1000}})
+
+6- Crear usuario con permiso solo lectura:
+use admin
+db.createUser({ user:"pepe", pwd:"asd456", roles:[{role:"read",db:"econmmerce"}]})
