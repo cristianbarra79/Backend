@@ -270,76 +270,12 @@ io.on("connection", (socket) => {
 })
 
 
-const modo = args.modo
 
-//const puerto = process.argv[2]
-
-if(modo == "FORK"){
-        
-    app.get("/login", (req,res) =>{
-
-        if (req.session.email) {
-            
-            res.render("usuario", {usuario: req.session.email})
-        }else
-            res.render("login")
-        
-    })
-
-    app.post("/login", passport.authenticate('login', { failureRedirect: '/faillogin' }), (req,res) =>{
-        req.session.email = req.body.email
-        //req.session.password = req.body.password
-        res.render("usuario", {usuario: req.session.email})    
-    })
-
-    app.get("/register", (req,res) =>{    
-        res.render("register")
-    })
-
-    app.post("/register", passport.authenticate('register', { failureRedirect: '/failregister' }),(req,res) =>{
-        res.redirect("login")   
-    })
+const PORT = parseInt(process.argv[2]) || 8080
+const modo = process.argv[3]
 
 
-    app.get("/logout", (req,res) =>{
-        req.session.destroy( err => {
-            if(!err) res.render("logout")
-            else res.send({status: 'Logout ERROR', body: err})
-        })
-    })
-
-    app.get("/faillogin", (req,res) =>{
-        res.render("fail", {error: "LOGIN", accion: "login"})
-    })
-
-    app.get("/failregister", (req,res) =>{
-        res.render("fail", {error: "REGISTER", accion: "register"})
-    })
-
-
-    app.get("/info", (req,res) =>{
-        const datos = {
-            argumento: process.argv.slice(2),
-            plataforma: process.platform,
-            version: process.version,
-            memoria: process.memoryUsage().rss,        
-            id: process.pid,
-            carpeta: process.cwd(),
-            cpus: numCPUs
-        }
-        res.render("info", datos)
-    })
-
-    app.get("/api/randoms", (req,res) =>{
-        const forked = fork("./child.js")    
-        forked.on("message", cantidad => {
-            res.send(cantidad)
-        })
-        forked.send(req.query.cant || 100000000 )
-    })
-
-    httpServer.listen(args.puerto, () => console.log("SERVER ON"));
-}else if(modo == "cluster" || modo == "CLUSTER"){
+if(modo == "cluster" || modo == "CLUSTER"){
     if (cluster.isMaster) {
         console.log(numCPUs)
         console.log(`PID MASTER ${process.pid}`)
@@ -423,12 +359,87 @@ if(modo == "FORK"){
         })
         
         app.get('/prueba', (req, res) => {
-            res.send(`Servidor express en ${args.puerto} - <b>PID ${process.pid}</b> - ${new Date().toLocaleString()}`)
+            res.send(`Servidor express en ${PORT} - <b>PID ${process.pid}</b> - ${new Date().toLocaleString()}`)
         })
 
-        app.listen(args.puerto, err => {
-            if (!err) console.log(`Servidor express escuchando en el puerto ${args.puerto} - PID WORKER ${process.pid}`)
+        app.listen(PORT, err => {
+            if (!err) console.log(`Servidor express escuchando en el puerto ${PORT} - PID WORKER ${process.pid}`)
         })
+        
+        app.get('/prueba', (req, res) => {
+            res.send(`Servidor express en ${PORT} - <b>PID ${process.pid}</b> - ${new Date().toLocaleString()}`)
+        })
+    
     }
-}else
-    console.log("No ingreso un modo valido");
+     
+}else{
+       
+    app.get("/login", (req,res) =>{
+
+        if (req.session.email) {
+            
+            res.render("usuario", {usuario: req.session.email})
+        }else
+            res.render("login")
+        
+    })
+
+    app.post("/login", passport.authenticate('login', { failureRedirect: '/faillogin' }), (req,res) =>{
+        req.session.email = req.body.email
+        //req.session.password = req.body.password
+        res.render("usuario", {usuario: req.session.email})    
+    })
+
+    app.get("/register", (req,res) =>{    
+        res.render("register")
+    })
+
+    app.post("/register", passport.authenticate('register', { failureRedirect: '/failregister' }),(req,res) =>{
+        res.redirect("login")   
+    })
+
+
+    app.get("/logout", (req,res) =>{
+        req.session.destroy( err => {
+            if(!err) res.render("logout")
+            else res.send({status: 'Logout ERROR', body: err})
+        })
+    })
+
+    app.get("/faillogin", (req,res) =>{
+        res.render("fail", {error: "LOGIN", accion: "login"})
+    })
+
+    app.get("/failregister", (req,res) =>{
+        res.render("fail", {error: "REGISTER", accion: "register"})
+    })
+
+
+    app.get("/info", (req,res) =>{
+        const datos = {
+            argumento: process.argv.slice(2),
+            plataforma: process.platform,
+            version: process.version,
+            memoria: process.memoryUsage().rss,        
+            id: process.pid,
+            carpeta: process.cwd(),
+            cpus: numCPUs
+        }
+        res.render("info", datos)
+    })
+
+    app.get("/api/randoms", (req,res) =>{
+        const forked = fork("./child.js")    
+        forked.on("message", cantidad => {
+            res.send({Server: PORT, mensaje: cantidad})
+        })
+        forked.send(req.query.cant || 100000000 )
+    })
+
+    app.get('/prueba', (req, res) => {
+        res.send(`Servidor express en ${PORT} - <b>PID ${process.pid}</b> - ${new Date().toLocaleString()}`)
+    })
+
+
+    httpServer.listen(PORT, () => console.log("SERVER ON"));
+}
