@@ -1,0 +1,5 @@
+[2022-06-14T19:37:44.309Z] [warn] [Ruta equivocada]
+[2022-06-14T20:26:01.264Z] [warn] [Ruta equivocada]
+[2022-06-14T20:26:36.794Z] [warn] [Ruta equivocada]
+[2022-06-14T20:27:04.485Z] [warn] [Ruta equivocada]
+[2022-06-14T20:35:11.952Z] [error] [Cast to Number failed for value "undefined" (type string) at path "id" for model "productos"]

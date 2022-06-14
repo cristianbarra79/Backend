@@ -1,0 +1,21 @@
+Test de la API productos
+    GET
+      ✔ Deberia retornar un array con datos (1225ms)
+    POST
+      ✔ Deberia retornar un status 200 (383ms)
+    GET
+      ✔ Deberia retornar el producto añadido anteriormente (173ms)
+    PUT
+      ✔ Deberia retornar un status 200 (176ms)
+    GET
+      ✔ Deberia devolver el producto con la propiedad actualizada (172ms)
+    POST
+      ✔ Deberia retornar un status 200 (347ms)
+      ✔ Deberia retornar el producto añadido anteriormente (172ms)
+    DELETE
+      ✔ Deberia mensaje de eliminado (176ms)
+
+
+8 passing (3s)
+
+Test para verificar si las respuestas a la lectura, incorporación, modificación y borrado de productos son las apropiadas.
