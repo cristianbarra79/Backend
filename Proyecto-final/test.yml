@@ -1,0 +1,14 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 30
+      arrivalRate: 10
+      name: "Obtener perfil"
+ 
+scenarios:
+  - name: "loguear"
+    flow:
+      - get:
+          url: "/perfil"
+          headers:
+            authorization: 
